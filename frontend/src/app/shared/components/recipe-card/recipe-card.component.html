@@ -1,0 +1,36 @@
+<article class="recipe-card group" [routerLink]="['/recipe', recipe.id]">
+  <div class="card-image-wrapper">
+    <img [src]="recipe.image" [alt]="recipe.name" class="card-image" loading="lazy">
+    <button (click)="toggleFavorite($event)" class="btn-favorite" [class.is-favorite]="isFavorite" title="Save to favorites">
+      <span class="material-symbols-outlined icon-heart">favorite</span>
+    </button>
+    <div class="card-tag">
+      <span class="pill pill-sage">{{ getPrimaryTag() }}</span>
+    </div>
+  </div>
+  
+  <div class="card-content">
+    <div class="title-row">
+      <h3 class="recipe-title">{{ recipe.name }}</h3>
+      <div class="rating-badge">
+        <span class="material-symbols-outlined icon-star">star</span>
+        <span class="rating-value">{{ recipe.rating }}</span>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <span class="material-symbols-outlined">schedule</span>
+        <span>{{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} mins</span>
+      </div>
+      <div class="meta-item">
+        <span class="material-symbols-outlined">restaurant</span>
+        <span>{{ recipe.difficulty }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="material-symbols-outlined">local_fire_department</span>
+        <span>{{ recipe.caloriesPerServing }} kcal</span>
+      </div>
+    </div>
+  </div>
+</article>

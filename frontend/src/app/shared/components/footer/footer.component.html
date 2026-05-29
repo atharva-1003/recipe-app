@@ -1,0 +1,59 @@
+<footer class="footer">
+  <div class="footer-grid container">
+    <div class="footer-brand">
+      <h2 class="logo">Culinary Harvest</h2>
+      <p class="brand-tagline">Nourishing your home kitchen with curated seasonal recipes and professional techniques.</p>
+    </div>
+    
+    <div class="footer-links-group">
+      <div class="link-column">
+        <h4 class="column-title">Explore</h4>
+        <ul class="link-list">
+          <li><a routerLink="/">Home / Seasonal</a></li>
+          <li><a routerLink="/explorer">Recipe Explorer</a></li>
+          <li><a routerLink="/explorer" [queryParams]="{sortBy: 'rating'}">Chef's Picks</a></li>
+        </ul>
+      </div>
+      <div class="link-column">
+        <h4 class="column-title">Legal & Contact</h4>
+        <ul class="link-list">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-newsletter">
+      <h4 class="column-title">Stay Inspired</h4>
+      <p class="newsletter-text">Get seasonal recipes delivered to your inbox weekly.</p>
+      
+      @if (subscribed) {
+        <div class="subscribed-alert">
+          <span class="material-symbols-outlined alert-icon">check_circle</span>
+          <span>Thank you for subscribing!</span>
+        </div>
+      } @else {
+        <form (submit)="onSubscribe()" class="newsletter-form">
+          <input 
+            type="email" 
+            [(ngModel)]="emailAddress" 
+            name="email"
+            placeholder="Email address" 
+            required 
+            class="newsletter-input"
+          />
+          <button type="submit" class="btn btn-primary btn-subscribe">Join</button>
+        </form>
+      }
+    </div>
+  </div>
+  
+  <div class="footer-bottom container">
+    <div class="social-links">
+      <a href="#" class="social-icon" title="Website"><span class="material-symbols-outlined">public</span></a>
+      <a href="#" class="social-icon" title="Share"><span class="material-symbols-outlined">share</span></a>
+    </div>
+    <p class="copyright">© 2024 Culinary Harvest. Nourishing your home kitchen.</p>
+  </div>
+</footer>
