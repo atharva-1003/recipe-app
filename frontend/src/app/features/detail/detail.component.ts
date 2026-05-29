@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RecipeService } from '../../core/services/recipe.service';
 import { Recipe } from '../../core/models/recipe.model';
@@ -14,6 +14,7 @@ import { RecipeCardComponent } from '../../shared/components/recipe-card/recipe-
 export class DetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly recipeService = inject(RecipeService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   recipe: Recipe | null = null;
   relatedRecipes: Recipe[] = [];
@@ -38,10 +39,12 @@ export class DetailComponent implements OnInit {
         this.recipe = recipe;
         this.loading = false;
         this.checkedIngredients.clear();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading recipe:', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -52,9 +55,11 @@ export class DetailComponent implements OnInit {
       next: (response) => {
         this.relatedRecipes = response.recipes.filter(r => r.id !== currentId).slice(0, 3);
         this.loadingRelated = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loadingRelated = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -65,7 +70,9 @@ export class DetailComponent implements OnInit {
     } else {
       this.checkedIngredients.add(index);
     }
+    this.cdr.detectChanges();
   }
+
 
   isIngredientChecked(index: number): boolean {
     return this.checkedIngredients.has(index);

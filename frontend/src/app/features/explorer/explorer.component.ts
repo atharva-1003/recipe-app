@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RecipeService } from '../../core/services/recipe.service';
@@ -15,12 +15,14 @@ import { RecipeCardComponent } from '../../shared/components/recipe-card/recipe-
 export class ExplorerComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);
   private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   recipes: Recipe[] = [];
   allRecipes: Recipe[] = [];
   loading = true;
   searchQuery = '';
   totalRecipes = 0;
+
 
   // Filter states
   selectedMealType = '';
@@ -62,18 +64,24 @@ export class ExplorerComponent implements OnInit {
 
   loadAllRecipes(): void {
     this.loading = true;
+    console.log('loadAllRecipes: Subscribing to recipeService...');
     this.recipeService.getRecipes({ limit: 50, skip: 0 }).subscribe({
       next: (response) => {
+        console.log('loadAllRecipes: RECEIVED RESPONSE, recipes count:', response.recipes ? response.recipes.length : 'none');
         this.allRecipes = response.recipes;
         this.totalRecipes = response.total;
         this.applyFiltersAndSort();
         this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.error('loadAllRecipes: ERROR RECEIVED:', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
+
 
   searchRecipes(): void {
     if (!this.searchQuery.trim()) {
@@ -87,9 +95,11 @@ export class ExplorerComponent implements OnInit {
         this.totalRecipes = response.total;
         this.applyFiltersAndSort();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -102,12 +112,15 @@ export class ExplorerComponent implements OnInit {
         this.totalRecipes = response.total;
         this.applyFiltersAndSort();
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
+
 
   onSearch(): void {
     this.searchRecipes();
@@ -227,6 +240,7 @@ export class ExplorerComponent implements OnInit {
       const moreRecipes = filtered.slice(start, end);
       this.recipes = [...this.recipes, ...moreRecipes];
       this.loadingMore = false;
+      this.cdr.detectChanges();
     }, 400);
   }
 

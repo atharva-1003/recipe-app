@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RecipeService } from '../../core/services/recipe.service';
@@ -15,6 +15,7 @@ import { RecipeCardComponent } from '../../shared/components/recipe-card/recipe-
 export class HomeComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   searchQuery = '';
   seasonalPicks: Recipe[] = [];
@@ -47,10 +48,12 @@ export class HomeComponent implements OnInit {
       next: (response) => {
         this.seasonalPicks = response.recipes;
         this.loadingSeasonal = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading seasonal picks:', err);
         this.loadingSeasonal = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -60,10 +63,12 @@ export class HomeComponent implements OnInit {
       next: (response) => {
         this.trendingRecipes = response.recipes;
         this.loadingTrending = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading trending recipes:', err);
         this.loadingTrending = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -81,12 +86,14 @@ export class HomeComponent implements OnInit {
   nextCarousel(): void {
     if (this.seasonalPicks.length > 0) {
       this.activeCarouselIndex = (this.activeCarouselIndex + 1) % this.seasonalPicks.length;
+      this.cdr.detectChanges();
     }
   }
 
   prevCarousel(): void {
     if (this.seasonalPicks.length > 0) {
       this.activeCarouselIndex = (this.activeCarouselIndex - 1 + this.seasonalPicks.length) % this.seasonalPicks.length;
+      this.cdr.detectChanges();
     }
   }
 
@@ -94,8 +101,10 @@ export class HomeComponent implements OnInit {
     if (this.emailAddress.trim()) {
       this.newsletterSubscribed = true;
       this.emailAddress = '';
+      this.cdr.detectChanges();
       setTimeout(() => {
         this.newsletterSubscribed = false;
+        this.cdr.detectChanges();
       }, 5000);
     }
   }
