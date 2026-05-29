@@ -1,0 +1,168 @@
+<div class="explorer-layout">
+  <!-- Filter Sidebar -->
+  <aside class="filter-sidebar" id="filter-sidebar">
+    <div class="filter-header">
+      <h2 class="headline-md">Filters</h2>
+      <button class="clear-filters-btn label-md" (click)="clearFilters()">Clear all</button>
+    </div>
+
+    <!-- Mobile Search -->
+    <div class="mobile-search">
+      <form (submit)="onSearch()" class="sidebar-search-form">
+        <span class="material-symbols-outlined sidebar-search-icon">search</span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          name="sidebarSearch"
+          placeholder="Search..."
+          class="sidebar-search-input"
+        />
+      </form>
+    </div>
+
+    <!-- Meal Type Filter -->
+    <div class="filter-group">
+      <label class="filter-label label-md">Meal Type</label>
+      <div class="meal-type-pills">
+        @for (type of mealTypes; track type) {
+          <button
+            class="meal-pill label-sm"
+            [class.active]="selectedMealType === type"
+            (click)="toggleMealType(type)"
+          >
+            {{ type }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Difficulty Filter -->
+    <div class="filter-group">
+      <label class="filter-label label-md">Difficulty</label>
+      <div class="difficulty-checks">
+        @for (diff of difficulties; track diff) {
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="selectedDifficulties.includes(diff)"
+              (change)="toggleDifficulty(diff)"
+              class="filter-checkbox"
+            />
+            <span class="body-md">{{ diff }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- Rating Filter -->
+    <div class="filter-group">
+      <label class="filter-label label-md">Minimum Rating</label>
+      <div class="rating-stars">
+        @for (star of [1,2,3,4,5]; track star) {
+          <span
+            class="material-symbols-outlined star-icon"
+            [class.filled]="star <= minRating"
+            (click)="setMinRating(star)"
+          >
+            star
+          </span>
+        }
+        @if (minRating > 0) {
+          <span class="rating-label label-md">& Up</span>
+        }
+      </div>
+    </div>
+
+    <!-- Calories Filter -->
+    <div class="filter-group">
+      <label class="filter-label label-md">Calories (under {{ maxCalories }})</label>
+      <input
+        type="range"
+        min="100"
+        max="1500"
+        [value]="maxCalories"
+        (input)="onCaloriesChange($event)"
+        class="calorie-slider"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-primary apply-filters-btn" (click)="applyFiltersAndSort()">
+        Apply Filters
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <section class="explorer-content">
+    <!-- Sorting & Stats -->
+    <div class="content-header">
+      <div class="content-title-block">
+        <h1 class="headline-lg">Explore Recipes</h1>
+        <p class="body-md results-count">
+          @if (searchQuery) {
+            Results for "{{ searchQuery }}" — {{ totalRecipes }} recipes
+          } @else {
+            Showing {{ totalRecipes }} seasonal inspirations
+          }
+        </p>
+      </div>
+      <div class="sort-tabs">
+        @for (opt of sortOptions; track opt.value) {
+          <button
+            class="sort-tab label-md"
+            [class.active]="selectedSortBy === opt.value"
+            (click)="setSortBy(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Recipe Grid -->
+    @if (loading) {
+      <div class="recipe-grid" id="recipe-grid">
+        @for (s of [1,2,3,4,5,6]; track s) {
+          <div class="skeleton-card-explorer">
+            <div class="skeleton-shimmer skeleton-img-explorer"></div>
+            <div class="skeleton-body-explorer">
+              <div class="skeleton-shimmer skeleton-title-explorer"></div>
+              <div class="skeleton-shimmer skeleton-meta-explorer"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="recipe-grid" id="recipe-grid">
+        @for (recipe of recipes; track recipe.id) {
+          <app-recipe-card [recipe]="recipe"></app-recipe-card>
+        }
+      </div>
+
+      @if (recipes.length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">search_off</span>
+          <h3 class="headline-md">No recipes found</h3>
+          <p class="body-md">Try adjusting your filters or search query.</p>
+          <button class="btn btn-outline" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      }
+
+      <!-- Load More -->
+      @if (hasMore()) {
+        <div class="load-more-section">
+          <button class="load-more-btn" (click)="loadMore()" [disabled]="loadingMore">
+            @if (loadingMore) {
+              <div class="loader-spinner"></div>
+              <span class="label-md">Curating new recipes...</span>
+            } @else {
+              <span class="label-md load-more-text">Scroll for more inspiration</span>
+              <span class="material-symbols-outlined load-more-icon">expand_more</span>
+            }
+          </button>
+        </div>
+      }
+    }
+  </section>
+</div>

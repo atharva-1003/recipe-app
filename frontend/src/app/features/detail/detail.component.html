@@ -1,0 +1,150 @@
+@if (loading) {
+  <div class="detail-loading">
+    <div class="skeleton-shimmer skeleton-hero-detail"></div>
+    <div class="detail-content-grid">
+      <div class="skeleton-shimmer skeleton-sidebar-detail"></div>
+      <div class="skeleton-detail-steps">
+        <div class="skeleton-shimmer skeleton-step"></div>
+        <div class="skeleton-shimmer skeleton-step"></div>
+        <div class="skeleton-shimmer skeleton-step"></div>
+      </div>
+    </div>
+  </div>
+} @else if (recipe) {
+  <!-- Recipe Header -->
+  <section class="recipe-header-section container" id="recipe-header">
+    <div class="recipe-header-top">
+      <div class="recipe-header-text">
+        <span class="label-sm recipe-category-label">
+          {{ getPrimaryTag() }}
+          @if (getMealTypeLabel()) {
+            • {{ getMealTypeLabel() }}
+          }
+        </span>
+        <h1 class="display-lg recipe-name">{{ recipe.name }}</h1>
+      </div>
+      <div class="recipe-header-actions">
+        <button class="btn btn-secondary action-btn" (click)="printRecipe()">
+          <span class="material-symbols-outlined">print</span>
+          Print
+        </button>
+        <button class="btn btn-primary action-btn" (click)="shareRecipe()">
+          <span class="material-symbols-outlined">share</span>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Hero Image -->
+    <div class="recipe-hero-image-wrapper">
+      <img [src]="recipe.image" [alt]="recipe.name" class="recipe-hero-image" />
+      <div class="hero-stats-overlay">
+        <div class="stat-chip">
+          <span class="label-sm stat-label">PREP</span>
+          <span class="headline-md stat-value">{{ recipe.prepTimeMinutes }} min</span>
+        </div>
+        <div class="stat-chip">
+          <span class="label-sm stat-label">COOK</span>
+          <span class="headline-md stat-value">{{ recipe.cookTimeMinutes }} min</span>
+        </div>
+        <div class="stat-chip">
+          <span class="label-sm stat-label">CALORIES</span>
+          <span class="headline-md stat-value">{{ recipe.caloriesPerServing }} kcal</span>
+        </div>
+        <div class="stat-chip">
+          <span class="label-sm stat-label">DIFFICULTY</span>
+          <span class="headline-md stat-value">{{ recipe.difficulty }}</span>
+        </div>
+        <div class="stat-chip">
+          <span class="label-sm stat-label">RATING</span>
+          <span class="headline-md stat-value">{{ recipe.rating }} ★</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Grid -->
+  <div class="detail-content-grid container">
+    <!-- Left Column: Ingredients -->
+    <aside class="ingredients-panel">
+      <h2 class="headline-md ingredients-title">
+        <span class="material-symbols-outlined title-icon">shopping_basket</span>
+        Ingredients
+      </h2>
+      <div class="ingredients-list">
+        @for (ingredient of recipe.ingredients; track ingredient; let i = $index) {
+          <div
+            class="ingredient-row"
+            [class.checked]="isIngredientChecked(i)"
+            (click)="toggleIngredient(i)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isIngredientChecked(i)"
+              class="ingredient-checkbox"
+              (click)="$event.stopPropagation()"
+              (change)="toggleIngredient(i)"
+            />
+            <span class="body-md ingredient-text">{{ ingredient }}</span>
+          </div>
+        }
+      </div>
+      <div class="pro-tip-box">
+        <p class="label-md pro-tip-text">
+          <strong>Servings:</strong> {{ recipe.servings }} | <strong>Cuisine:</strong> {{ recipe.cuisine }}
+        </p>
+      </div>
+    </aside>
+
+    <!-- Right Column: Instructions -->
+    <article class="instructions-panel">
+      <h2 class="headline-md instructions-title">
+        <span class="material-symbols-outlined title-icon">restaurant_menu</span>
+        Preparation
+      </h2>
+      <div class="steps-list">
+        @for (instruction of recipe.instructions; track instruction; let i = $index) {
+          <div class="step-item">
+            <div class="step-number">{{ i + 1 }}</div>
+            <div class="step-content">
+              <h3 class="label-md step-label">Step {{ i + 1 }}</h3>
+              <p class="body-lg step-text">{{ instruction }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Rating Section -->
+      <div class="rating-section">
+        <div class="rating-info">
+          <p class="label-md">Did you make this?</p>
+          <div class="rating-display">
+            @for (s of getStars(recipe.rating); track $index) {
+              <span class="material-symbols-outlined star-filled">star</span>
+            }
+            @for (s of getEmptyStars(recipe.rating); track $index) {
+              <span class="material-symbols-outlined star-empty">star</span>
+            }
+            <span class="body-md rating-count">{{ recipe.reviewCount }} ratings</span>
+          </div>
+        </div>
+        <button class="btn-review label-md">Write a Review</button>
+      </div>
+    </article>
+  </div>
+
+  <!-- Related Recipes -->
+  @if (relatedRecipes.length > 0) {
+    <section class="related-section container" id="related-recipes">
+      <div class="related-header">
+        <h2 class="headline-lg">You might also love...</h2>
+        <a routerLink="/explorer" class="view-all-link label-md">View All Collections</a>
+      </div>
+      <div class="related-grid">
+        @for (related of relatedRecipes; track related.id) {
+          <app-recipe-card [recipe]="related"></app-recipe-card>
+        }
+      </div>
+    </section>
+  }
+}
