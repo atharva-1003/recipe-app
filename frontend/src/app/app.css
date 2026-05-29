@@ -1,0 +1,5 @@
+.app-main-content {
+  min-height: calc(100vh - 80px - 340px); /* 100vh minus header and footer height */
+  display: flex;
+  flex-direction: column;
+}

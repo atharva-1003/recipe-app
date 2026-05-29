@@ -1,0 +1,59 @@
+<header class="header">
+  <nav class="nav-container container">
+    <div class="nav-brand-group">
+      <a routerLink="/" class="logo">Culinary Harvest</a>
+      <div class="nav-links">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Seasonal</a>
+        <a routerLink="/explorer" routerLinkActive="active">Quick Meals</a>
+        <a routerLink="/explorer" [queryParams]="{mealType: 'Snack'}">Techniques</a>
+        <a routerLink="/explorer" [queryParams]="{sortBy: 'rating'}">Collections</a>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Search Input -->
+      <form (submit)="onSearch()" class="search-form">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          name="searchQuery"
+          placeholder="Search recipes..." 
+          class="search-input"
+        />
+      </form>
+
+      <!-- Icons -->
+      <button class="btn-nav-icon" title="Favorites" routerLink="/explorer" [queryParams]="{favorites: true}">
+        <span class="material-symbols-outlined">favorite</span>
+      </button>
+      <button class="btn-nav-icon" title="Account">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+      <button class="btn-nav-icon mobile-menu-btn" (click)="toggleMobileMenu()" title="Menu">
+        <span class="material-symbols-outlined">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  @if (isMobileMenuOpen) {
+    <div class="mobile-drawer">
+      <a routerLink="/" (click)="toggleMobileMenu()" class="drawer-link">Seasonal</a>
+      <a routerLink="/explorer" (click)="toggleMobileMenu()" class="drawer-link">Quick Meals</a>
+      <a routerLink="/explorer" [queryParams]="{mealType: 'Snack'}" (click)="toggleMobileMenu()" class="drawer-link">Techniques</a>
+      <a routerLink="/explorer" [queryParams]="{sortBy: 'rating'}" (click)="toggleMobileMenu()" class="drawer-link">Collections</a>
+      
+      <form (submit)="onSearch(); toggleMobileMenu()" class="mobile-search-form">
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          name="searchQuery"
+          placeholder="Search recipes..." 
+          class="search-input-mobile"
+        />
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  }
+</header>
