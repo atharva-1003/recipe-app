@@ -1,0 +1,175 @@
+<!-- Hero Section -->
+<section class="hero-section" id="home-hero">
+  <div class="hero-bg">
+    <img
+      src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5NnE_nRmaeBy8GQpIEQ64m85nTiS0lNN1c4bzLlyqbGVn-CUYj7KqUgOea1PZpChoJBBGEGMZr4bI33I6KN6maEataglSvb3yod_ZPpLik3OPT6o2GX__tR9bQWTYnO9jV52B3dEc7eH264IOLeOX-l3pSsLk21G5N1t7--9weBJJy99CvnFy5g8ZzTY9h-hlEPNqncbn4KepgNlQQt3pLfrYl7KY-bE66nAaGfxP5qvk0Dx1QHfUkUYBAenbduQQQ0fW9-0TNRE1"
+      alt="Gourmet Kitchen"
+      class="hero-image"
+    />
+    <div class="hero-gradient-overlay"></div>
+  </div>
+  <div class="hero-content container">
+    <div class="hero-text-block">
+      <h1 class="display-lg hero-title">Nourish Your Kitchen</h1>
+      <p class="body-lg hero-subtitle">
+        Discover curated recipes that blend high-end culinary techniques with the comforting soul of home cooking.
+        Elevate your everyday meals with seasonal ingredients and expert guidance.
+      </p>
+      <form (submit)="onHeroSearch()" class="hero-search-form">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          name="heroSearch"
+          placeholder="Search seasonal recipes..."
+          class="hero-search-input"
+          id="hero-search-input"
+        />
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section container" id="categories">
+  <div class="section-header">
+    <h2 class="headline-lg">Explore by Category</h2>
+    <a routerLink="/explorer" class="view-all-link label-md">View All Categories</a>
+  </div>
+  <div class="categories-grid">
+    @for (cat of categories; track cat.label) {
+      <button class="category-card" (click)="navigateToCategory(cat.mealType)">
+        <div class="category-icon-wrapper">
+          <span class="material-symbols-outlined category-icon">{{ cat.icon }}</span>
+        </div>
+        <span class="label-md">{{ cat.label }}</span>
+      </button>
+    }
+  </div>
+</section>
+
+<!-- Chef's Seasonal Picks Carousel -->
+<section class="seasonal-picks-section" id="seasonal-picks">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="headline-lg">Chef's Seasonal Picks</h2>
+      <div class="carousel-controls">
+        <button class="btn-carousel" (click)="prevCarousel()" aria-label="Previous">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button class="btn-carousel" (click)="nextCarousel()" aria-label="Next">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    @if (loadingSeasonal) {
+      <div class="carousel-track">
+        @for (s of [1,2]; track s) {
+          <div class="carousel-card skeleton-card">
+            <div class="skeleton-shimmer skeleton-img"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-shimmer skeleton-title"></div>
+              <div class="skeleton-shimmer skeleton-meta"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="carousel-track">
+        @for (recipe of seasonalPicks; track recipe.id; let i = $index) {
+          <div
+            class="carousel-card"
+            [class.active-card]="i === activeCarouselIndex"
+            [routerLink]="['/recipe', recipe.id]"
+          >
+            <img [src]="recipe.image" [alt]="recipe.name" class="carousel-image" loading="lazy" />
+            <div class="carousel-overlay"></div>
+            <div class="carousel-card-content">
+              <div class="carousel-tags">
+                @if (recipe.tags && recipe.tags.length > 0) {
+                  <span class="carousel-tag tag-primary">{{ recipe.tags[0] }}</span>
+                }
+                @if (recipe.tags && recipe.tags.length > 1) {
+                  <span class="carousel-tag tag-secondary">{{ recipe.tags[1] }}</span>
+                }
+              </div>
+              <h3 class="headline-md carousel-title">{{ recipe.name }}</h3>
+              <div class="carousel-meta">
+                <span class="meta-chip">
+                  <span class="material-symbols-outlined">schedule</span>
+                  {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }} mins
+                </span>
+                <span class="meta-chip">
+                  <span class="material-symbols-outlined">restaurant</span>
+                  {{ recipe.difficulty }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Trending This Week Grid -->
+<section class="trending-section container" id="trending">
+  <h2 class="headline-lg section-title">Trending This Week</h2>
+
+  @if (loadingTrending) {
+    <div class="trending-grid">
+      @for (s of [1,2,3]; track s) {
+        <div class="trending-card-skeleton">
+          <div class="skeleton-shimmer skeleton-img-sm"></div>
+          <div class="skeleton-content">
+            <div class="skeleton-shimmer skeleton-title"></div>
+            <div class="skeleton-shimmer skeleton-meta"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="trending-grid">
+      @for (recipe of trendingRecipes; track recipe.id) {
+        <app-recipe-card [recipe]="recipe"></app-recipe-card>
+      }
+    </div>
+  }
+</section>
+
+<!-- Newsletter CTA -->
+<section class="newsletter-section container" id="newsletter-cta">
+  <div class="newsletter-card">
+    <div class="newsletter-blur-orb"></div>
+    <div class="newsletter-content">
+      <h2 class="headline-lg newsletter-title">Fresh Inspiration in Your Inbox</h2>
+      <p class="body-md newsletter-text">
+        Join 50,000+ home cooks receiving weekly seasonal recipes, kitchen tips, and exclusive collection previews.
+      </p>
+      @if (newsletterSubscribed) {
+        <div class="newsletter-success">
+          <span class="material-symbols-outlined success-icon">check_circle</span>
+          <span>Thank you for subscribing!</span>
+        </div>
+      } @else {
+        <form (submit)="onNewsletterSubmit()" class="newsletter-form">
+          <input
+            type="email"
+            [(ngModel)]="emailAddress"
+            name="newsletterEmail"
+            placeholder="Enter your email"
+            class="newsletter-input"
+            required
+          />
+          <button type="submit" class="btn btn-primary newsletter-btn">Subscribe</button>
+        </form>
+      }
+    </div>
+    <div class="newsletter-decoration">
+      <div class="decoration-box">
+        <span class="material-symbols-outlined decoration-icon">mail</span>
+      </div>
+    </div>
+  </div>
+</section>
